@@ -184,14 +184,14 @@ __Vectors_Size  EQU  __Vectors_End - __Vectors
 ; Reset handler
 Reset_Handler    PROC
                  EXPORT  Reset_Handler             [WEAK]
-				 IMPORT  init_memory
+				 IMPORT main
 								 LDR.W R0, =0XE000ED88
 								 LDR R1, [R0]
 								 ORR R1, R1, #(0XF << 20)
 								 STR R1, [R0]
 								 DSB
 								 ISB
-                 LDR     R0, =init_memory
+                 LDR     R0, =main
                  BX      R0
 				 NOP
                  ENDP

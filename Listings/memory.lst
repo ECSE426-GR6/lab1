@@ -9,25 +9,28 @@ ARM Macro Assembler    Page 1
     3 00000000                 export           out_ptr
     4 00000000                 export           kal_ptr
     5 00000000                 export           arr_length
-    6 00000000         
-    7 00000000 00000000 
+    6 00000000                 export           out_index
+    7 00000000         
+    8 00000000 00000000 
                        in_ptr  DCD              0
-    8 00000004 00000000 
+    9 00000004 00000000 
                        out_ptr DCD              0
-    9 00000008 00000000 
+   10 00000008 00000000 
                        kal_ptr DCD              0
-   10 0000000C 00000000 
+   11 0000000C 00000000 
                        arr_length
                                DCD              0
-   11 00000010         
-   12 00000010                 END
+   12 00000010 00000000 
+                       out_index
+                               DCD              0
+   13 00000014         
+   14 00000014                 END
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
 erwork --depend=.\objects\memory.d -o.\objects\memory.o -IC:\Users\fobrie\Micro
-Processors\Lab1_STM32F4Cube_Base_project\RTE -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\4.
-5.0\CMSIS\Include -IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.7.0\Drivers\CMSIS\
-Device\ST\STM32F4xx\Include --predefine="__UVISION_VERSION SETA 515" --predefin
-e="_RTE_ SETA 1" --predefine="STM32F407xx SETA 1" --list=.\listings\memory.lst 
-Sources\Memory.s
+Processors\Group6-Lab1\RTE -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include 
+-IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.7.0\Drivers\CMSIS\Device\ST\STM32F4x
+x\Include --predefine="__UVISION_VERSION SETA 515" --predefine="_RTE_ SETA 1" -
+-predefine="STM32F407xx SETA 1" --list=.\listings\memory.lst Sources\Memory.s
 
 
 
@@ -38,7 +41,7 @@ arr_length 0000000C
 
 Symbol: arr_length
    Definitions
-      At line 10 in file Sources\Memory.s
+      At line 11 in file Sources\Memory.s
    Uses
       At line 5 in file Sources\Memory.s
 Comment: arr_length used once
@@ -46,7 +49,7 @@ in_ptr 00000000
 
 Symbol: in_ptr
    Definitions
-      At line 7 in file Sources\Memory.s
+      At line 8 in file Sources\Memory.s
    Uses
       At line 2 in file Sources\Memory.s
 Comment: in_ptr used once
@@ -54,7 +57,7 @@ kal_ptr 00000008
 
 Symbol: kal_ptr
    Definitions
-      At line 9 in file Sources\Memory.s
+      At line 10 in file Sources\Memory.s
    Uses
       At line 4 in file Sources\Memory.s
 Comment: kal_ptr used once
@@ -66,13 +69,21 @@ Symbol: mydata
    Uses
       None
 Comment: mydata unused
+out_index 00000010
+
+Symbol: out_index
+   Definitions
+      At line 12 in file Sources\Memory.s
+   Uses
+      At line 6 in file Sources\Memory.s
+Comment: out_index used once
 out_ptr 00000004
 
 Symbol: out_ptr
    Definitions
-      At line 8 in file Sources\Memory.s
+      At line 9 in file Sources\Memory.s
    Uses
       At line 3 in file Sources\Memory.s
 Comment: out_ptr used once
-5 symbols
-338 symbols in table
+6 symbols
+339 symbols in table

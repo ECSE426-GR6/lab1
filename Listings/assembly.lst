@@ -5,76 +5,147 @@ ARM Macro Assembler    Page 1
 
 
     1 00000000                 AREA             text, CODE, READONLY
-    2 00000000                 export           init_memory
-    3 00000000                 export           process_measurement
+    2 00000000                 export           Kalmanfilter_asm
+    3 00000000                 export           test_asm
     4 00000000         
-    5 00000000                 import           in_ptr
-    6 00000000                 import           out_ptr
-    7 00000000                 import           kal_ptr
-    8 00000000                 import           arr_length
-    9 00000000         
-   10 00000000         init_memory
-   11 00000000         ;INPUTS
-   12 00000000         ;R0 - input ptr
-   13 00000000         ;R1 - output ptr
-   14 00000000         ;R2 - kalman ptr
-   15 00000000         ;R3 - length
-   16 00000000         
-   17 00000000 4C04            LDR              R4, =in_ptr
-   18 00000002 4D05            LDR              R5, =out_ptr
-   19 00000004 4E05            LDR              R6, =kal_ptr
-   20 00000006 4F06            LDR              R7, =arr_length
-   21 00000008         
-   22 00000008 6020            STR              R0, [R4]
-   23 0000000A 6029            STR              R1, [R5]
-   24 0000000C 6032            STR              R2, [R6]
-   25 0000000E 603B            STR              R3, [R7]
-   26 00000010         
-   27 00000010 4770            BX               LR          ;
-   28 00000012         
-   29 00000012         
-   30 00000012         process_measurement
-   31 00000012         
-   32 00000012         ;S0 - input measurement
-   33 00000012         ;update params
-   34 00000012         ;add result to array
-   35 00000012         ;return result through S0
-   36 00000012         
-   37 00000012 4770            BX               LR          ;
-   38 00000014                 end
-              00000000 
-              00000000 
-              00000000 
-              00000000 
+    5 00000000         test_asm
+    6 00000000 4601            mov              R1, R0
+    7 00000002 4770            BX               LR
+    8 00000004         
+    9 00000004         Kalmanfilter_asm
+   10 00000004         ;INPUTS
+   11 00000004         ;R0 - input ptr
+   12 00000004         ;R1 - output ptr
+   13 00000004         ;R2 - kalman ptr
+   14 00000004         ;R3 - length
+   15 00000004         ;R4 - current index
+   16 00000004         ;R5 - temprary address register
+   17 00000004         
+   18 00000004         ;S0 - current measurement
+   19 00000004         ;S1 - q
+   20 00000004         ;S2 - r
+   21 00000004         ;S3 - x
+   22 00000004         ;S4 - p
+   23 00000004         ;S5 - k
+   24 00000004         ;S6 - temporary register
+   25 00000004         ;S7 - nan check register
+   26 00000004         
+   27 00000004 F04F 0400       MOV              R4, #0      ;current index
+   28 00000008         
+   29 00000008 EDD2 0A00       VLDR             S1, [R2]    ;q
+   30 0000000C ED92 1A01       VLDR             S2, [R2, #4] ;r
+   31 00000010 EDD2 1A02       VLDR             S3, [R2, #8] ;x
+   32 00000014 ED92 2A03       VLDR             S4, [R2, #12] ;p
+   33 00000018 EDD2 2A04       VLDR             S5, [R2, #16] ;k
+   34 0000001C         
+   35 0000001C         next_measurement
+   36 0000001C         
+   37 0000001C         ;load next measurement
+   38 0000001C EA4F 0584       LSL              R5, R4, #2  ;calculate offset f
+                                                            rom index
+   39 00000020 4405            ADD              R5, R0, R5  ;add base address t
+                                                            o offset
+   40 00000022 ED95 0A00       VLDR             S0, [R5]    ;S0 = input[R4]
+   41 00000026         
+   42 00000026         ;p = p + q
+   43 00000026 EE32 2A20       VADD.F32         S4, S4, S1
+   44 0000002A         
+   45 0000002A         ;k = p / (p + r)
+   46 0000002A EE32 3A01       VADD.F32         S6, S4, S2  ;S6 = p + r
+   47 0000002E EEC2 2A03       VDIV.F32         S5, S4, S6  ;k = p / S6
+   48 00000032         
+   49 00000032         ;x = x + k * (measurement - x)
+   50 00000032 EE30 3A61       VSUB.F32         S6, S0, S3  ;S6 = measurement -
+                                                             x
+   51 00000036 EE22 3A83       VMUL.F32         S6, S5, S6  ;S6 = k * S6
+   52 0000003A EE71 1A83       VADD.F32         S3, S3, S6  ;x = x + S6
+   53 0000003E         
+   54 0000003E         ;p = (1 - k) * p
+   55 0000003E EEB7 3A00       VMOV.F32         S6, #1.0    ;store 1 in S6 to s
+                                                            ubtract from
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+   56 00000042 EE33 3A62       VSUB.F32         S6, S6, S5  ;S6 = 1 - k
+   57 00000046 EE23 2A02       VMUL.F32         S4, S6, S4  ;p = S6 - p
+   58 0000004A         
+   59 0000004A         ;store result in output array and increment index R4
+   60 0000004A EA4F 0584       LSL              R5, R4, #2  ;calculate offset f
+                                                            rom index
+   61 0000004E 440D            ADD              R5, R1, R5  ;add base address t
+                                                            o offset
+   62 00000050 EDC5 1A00       VSTR.F32         S3, [R5]    ;store x (S3) in ou
+                                                            tput[R4]
+   63 00000054 F104 0401       ADD              R4, R4, #1  ;R4++
+   64 00000058         
+   65 00000058         ;loop condition: index i < length
+   66 00000058 429C            CMP              R4, R3      ;compare R4(index) 
+                                                            and R3(length)
+   67 0000005A         ;if R4 - R3 < 0 then N = 1
+   68 0000005A D4DF            BMI              next_measurement ;loop if R4 (i
+                                                            ndex) < R3 (length)
+                                                            
+   69 0000005C         ;else return
+   70 0000005C         ;store final state
+   71 0000005C EDC2 0A00       VSTR.F32         S1, [R2]    ;q
+   72 00000060 ED82 1A01       VSTR.F32         S2, [R2, #4] ;r
+   73 00000064 EDC2 1A02       VSTR.F32         S3, [R2, #8] ;x
+   74 00000068 ED82 2A03       VSTR.F32         S4, [R2, #12] ;p
+   75 0000006C EDC2 2A04       VSTR.F32         S5, [R2, #16] ;k
+   76 00000070         
+   77 00000070         ;error checking (check for overflows and nan exceptions)
+                       
+   78 00000070 EEF1 0A10       VMRS             R0, FPSCR   ;copy FPSCR to R0
+   79 00000074 F04F 010F       MOV              R1, #0xF    ;set R1 to possible
+                                                             exceptions (inexac
+                                                            t exception ignored
+                                                            )
+   80 00000078 EA00 0001       AND              R0, R0, R1  ;if any exception o
+                                                            ccured, R0 != 0, el
+                                                            se R0 == 0
+   81 0000007C 4770            BX               LR          ;Return from subrou
+                                                            tine
+   82 0000007E                 END
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
 erwork --depend=.\objects\assembly.d -o.\objects\assembly.o -IC:\Users\fobrie\M
-icroProcessors\Lab1_STM32F4Cube_Base_project\RTE -IC:\Keil_v5\ARM\PACK\ARM\CMSI
-S\4.5.0\CMSIS\Include -IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.7.0\Drivers\CM
-SIS\Device\ST\STM32F4xx\Include --predefine="__UVISION_VERSION SETA 515" --pred
-efine="_RTE_ SETA 1" --predefine="STM32F407xx SETA 1" --list=.\listings\assembl
-y.lst Sources\Assembly.s
+icroProcessors\Group6-Lab1\RTE -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Incl
+ude -IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.7.0\Drivers\CMSIS\Device\ST\STM3
+2F4xx\Include --predefine="__UVISION_VERSION SETA 515" --predefine="_RTE_ SETA 
+1" --predefine="STM32F407xx SETA 1" --list=.\listings\assembly.lst Sources\Asse
+mbly.s
 
 
 
 ARM Macro Assembler    Page 1 Alphabetic symbol ordering
 Relocatable symbols
 
-init_memory 00000000
+Kalmanfilter_asm 00000004
 
-Symbol: init_memory
+Symbol: Kalmanfilter_asm
    Definitions
-      At line 10 in file Sources\Assembly.s
+      At line 9 in file Sources\Assembly.s
    Uses
       At line 2 in file Sources\Assembly.s
-Comment: init_memory used once
-process_measurement 00000012
+Comment: Kalmanfilter_asm used once
+next_measurement 0000001C
 
-Symbol: process_measurement
+Symbol: next_measurement
    Definitions
-      At line 30 in file Sources\Assembly.s
+      At line 35 in file Sources\Assembly.s
+   Uses
+      At line 68 in file Sources\Assembly.s
+Comment: next_measurement used once
+test_asm 00000000
+
+Symbol: test_asm
+   Definitions
+      At line 5 in file Sources\Assembly.s
    Uses
       At line 3 in file Sources\Assembly.s
-Comment: process_measurement used once
+Comment: test_asm used once
 text 00000000
 
 Symbol: text
@@ -83,44 +154,5 @@ Symbol: text
    Uses
       None
 Comment: text unused
-3 symbols
-
-
-
-ARM Macro Assembler    Page 1 Alphabetic symbol ordering
-External symbols
-
-arr_length 00000000
-
-Symbol: arr_length
-   Definitions
-      At line 8 in file Sources\Assembly.s
-   Uses
-      At line 20 in file Sources\Assembly.s
-Comment: arr_length used once
-in_ptr 00000000
-
-Symbol: in_ptr
-   Definitions
-      At line 5 in file Sources\Assembly.s
-   Uses
-      At line 17 in file Sources\Assembly.s
-Comment: in_ptr used once
-kal_ptr 00000000
-
-Symbol: kal_ptr
-   Definitions
-      At line 7 in file Sources\Assembly.s
-   Uses
-      At line 19 in file Sources\Assembly.s
-Comment: kal_ptr used once
-out_ptr 00000000
-
-Symbol: out_ptr
-   Definitions
-      At line 6 in file Sources\Assembly.s
-   Uses
-      At line 18 in file Sources\Assembly.s
-Comment: out_ptr used once
 4 symbols
-343 symbols in table
+338 symbols in table

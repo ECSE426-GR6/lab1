@@ -494,14 +494,14 @@ ARM Macro Assembler    Page 8
                                PROC
   186 00000000                 EXPORT           Reset_Handler             [WEAK
 ]
-  187 00000000                 IMPORT           init_memory
+  187 00000000                 IMPORT           main
   188 00000000 F8DF 0038       LDR.W            R0, =0XE000ED88
   189 00000004 6801            LDR              R1, [R0]
   190 00000006 F441 0170       ORR              R1, R1, #(0XF << 20)
   191 0000000A 6001            STR              R1, [R0]
   192 0000000C F3BF 8F4F       DSB
   193 00000010 F3BF 8F6F       ISB
-  194 00000014 480A            LDR              R0, =init_memory
+  194 00000014 480A            LDR              R0, =main
   195 00000016 4700            BX               R0
   196 00000018 BF00            NOP
   197 0000001A                 ENDP
@@ -885,12 +885,11 @@ ARM Macro Assembler    Page 14
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
 erwork --depend=.\objects\startup_stm32f407xx.d -o.\objects\startup_stm32f407xx
-.o -IC:\Users\fobrie\MicroProcessors\Lab1_STM32F4Cube_Base_project\RTE -IC:\Kei
-l_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include -IC:\Keil_v5\ARM\PACK\Keil\STM32F4x
-x_DFP\2.7.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include --predefine="__UVISION_VE
-RSION SETA 515" --predefine="_RTE_ SETA 1" --predefine="STM32F407xx SETA 1" --l
-ist=.\listings\startup_stm32f407xx.lst RTE\Device\STM32F407VGTx\startup_stm32f4
-07xx.s
+.o -IC:\Users\fobrie\MicroProcessors\Group6-Lab1\RTE -IC:\Keil_v5\ARM\PACK\ARM\
+CMSIS\4.5.0\CMSIS\Include -IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.7.0\Driver
+s\CMSIS\Device\ST\STM32F4xx\Include --predefine="__UVISION_VERSION SETA 515" --
+predefine="_RTE_ SETA 1" --predefine="STM32F407xx SETA 1" --list=.\listings\sta
+rtup_stm32f407xx.lst RTE\Device\STM32F407VGTx\startup_stm32f407xx.s
 
 
 
@@ -1977,13 +1976,13 @@ Symbol: __use_two_region_memory
    Uses
       None
 Comment: __use_two_region_memory unused
-init_memory 00000000
+main 00000000
 
-Symbol: init_memory
+Symbol: main
    Definitions
       At line 187 in file RTE\Device\STM32F407VGTx\startup_stm32f407xx.s
    Uses
       At line 194 in file RTE\Device\STM32F407VGTx\startup_stm32f407xx.s
-Comment: init_memory used once
+Comment: main used once
 2 symbols
 447 symbols in table
