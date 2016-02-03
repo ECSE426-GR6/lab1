@@ -1,0 +1,126 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000                 AREA             text, CODE, READONLY
+    2 00000000                 export           init_memory
+    3 00000000                 export           process_measurement
+    4 00000000         
+    5 00000000                 import           in_ptr
+    6 00000000                 import           out_ptr
+    7 00000000                 import           kal_ptr
+    8 00000000                 import           arr_length
+    9 00000000         
+   10 00000000         init_memory
+   11 00000000         ;INPUTS
+   12 00000000         ;R0 - input ptr
+   13 00000000         ;R1 - output ptr
+   14 00000000         ;R2 - kalman ptr
+   15 00000000         ;R3 - length
+   16 00000000         
+   17 00000000 4C04            LDR              R4, =in_ptr
+   18 00000002 4D05            LDR              R5, =out_ptr
+   19 00000004 4E05            LDR              R6, =kal_ptr
+   20 00000006 4F06            LDR              R7, =arr_length
+   21 00000008         
+   22 00000008 6020            STR              R0, [R4]
+   23 0000000A 6029            STR              R1, [R5]
+   24 0000000C 6032            STR              R2, [R6]
+   25 0000000E 603B            STR              R3, [R7]
+   26 00000010         
+   27 00000010 4770            BX               LR          ;
+   28 00000012         
+   29 00000012         
+   30 00000012         process_measurement
+   31 00000012         
+   32 00000012         ;S0 - input measurement
+   33 00000012         ;update params
+   34 00000012         ;add result to array
+   35 00000012         ;return result through S0
+   36 00000012         
+   37 00000012 4770            BX               LR          ;
+   38 00000014                 end
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
+erwork --depend=.\objects\assembly.d -o.\objects\assembly.o -IC:\Users\fobrie\M
+icroProcessors\Lab1_STM32F4Cube_Base_project\RTE -IC:\Keil_v5\ARM\PACK\ARM\CMSI
+S\4.5.0\CMSIS\Include -IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.7.0\Drivers\CM
+SIS\Device\ST\STM32F4xx\Include --predefine="__UVISION_VERSION SETA 515" --pred
+efine="_RTE_ SETA 1" --predefine="STM32F407xx SETA 1" --list=.\listings\assembl
+y.lst Sources\Assembly.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+init_memory 00000000
+
+Symbol: init_memory
+   Definitions
+      At line 10 in file Sources\Assembly.s
+   Uses
+      At line 2 in file Sources\Assembly.s
+Comment: init_memory used once
+process_measurement 00000012
+
+Symbol: process_measurement
+   Definitions
+      At line 30 in file Sources\Assembly.s
+   Uses
+      At line 3 in file Sources\Assembly.s
+Comment: process_measurement used once
+text 00000000
+
+Symbol: text
+   Definitions
+      At line 1 in file Sources\Assembly.s
+   Uses
+      None
+Comment: text unused
+3 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+External symbols
+
+arr_length 00000000
+
+Symbol: arr_length
+   Definitions
+      At line 8 in file Sources\Assembly.s
+   Uses
+      At line 20 in file Sources\Assembly.s
+Comment: arr_length used once
+in_ptr 00000000
+
+Symbol: in_ptr
+   Definitions
+      At line 5 in file Sources\Assembly.s
+   Uses
+      At line 17 in file Sources\Assembly.s
+Comment: in_ptr used once
+kal_ptr 00000000
+
+Symbol: kal_ptr
+   Definitions
+      At line 7 in file Sources\Assembly.s
+   Uses
+      At line 19 in file Sources\Assembly.s
+Comment: kal_ptr used once
+out_ptr 00000000
+
+Symbol: out_ptr
+   Definitions
+      At line 6 in file Sources\Assembly.s
+   Uses
+      At line 18 in file Sources\Assembly.s
+Comment: out_ptr used once
+4 symbols
+343 symbols in table
