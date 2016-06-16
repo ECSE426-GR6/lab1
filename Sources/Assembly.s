@@ -13,7 +13,7 @@ Kalmanfilter_asm
 	;R2 - kalman ptr
 	;R3 - length
 	;R4 - current index
-	;R5 - temprary address register
+	;R5 - temporary address register
 
 	;S0 - current measurement
 	;S1 - q

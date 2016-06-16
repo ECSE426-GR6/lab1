@@ -19,7 +19,7 @@ ARM Macro Assembler    Page 1
    13 00000004         ;R2 - kalman ptr
    14 00000004         ;R3 - length
    15 00000004         ;R4 - current index
-   16 00000004         ;R5 - temprary address register
+   16 00000004         ;R5 - temporary address register
    17 00000004         
    18 00000004         ;S0 - current measurement
    19 00000004         ;S1 - q
